@@ -2,10 +2,13 @@ import {
   TextPrompt,
   ChoicePrompt,
   ComponentDialog,
-  WaterfallDialog
+  WaterfallDialog,
 } from 'botbuilder-dialogs';
 
+import { MessageFactory, CardFactory } from 'botbuilder';
+
 import i18n from '../locales/i18nConfig';
+
 
 import { CallbackBotDialog, CALLBACK_BOT_DIALOG } from '../callbackBotDialog';
 
@@ -21,6 +24,8 @@ const MAX_ERROR_COUNT = 3;
 let INSTITUTE = false
 let TRANSIT = false;
 let ACCOUNT = false;
+
+const CARD_DEBUG = true;
 
 export class UnblockDirectDepositStep extends ComponentDialog {
   constructor() {
@@ -76,13 +81,6 @@ export class UnblockDirectDepositStep extends ComponentDialog {
       let promptMsg           = '';
       let retryMsg            = '';
 
-      // If first pass through, show welcome messaging
-      if(unblockBotDetails.unblockDirectDeposit === null) {
-        await stepContext.context.sendActivity(standardMsg);
-        await stepContext.context.sendActivity(listOfItems);
-        await stepContext.context.sendActivity(infoMsg);
-      }
-
       // State of unblock direct deposit determines message prompts
       if(TRANSIT === true) { // ACCOUNT
         promptMsg = i18n.__('unblock_direct_deposit_account');
@@ -110,8 +108,53 @@ export class UnblockDirectDepositStep extends ComponentDialog {
 
       }
 
+      if(CARD_DEBUG === true) {
+       // In practice you'll probably get this from a service
+       // see http://adaptivecards.io/samples/ for inspiration
+       const adaptiveCardData = {
+        "$schema": "http://adaptivecards.io/schemas/adaptive-card.json",
+        'type': 'AdaptiveCard',
+         'version': '1.0',
+         'body': [
+             {
+                 'type': 'Image',
+                 'url': 'http://adaptivecards.io/content/adaptive-card-50.png'
+             },
+             {
+                 'type': 'TextBlock',
+                 'text': 'Hello **Adaptive Cards!**'
+             }
+         ],
+         'actions': [
+             {
+                 'type': 'Action.OpenUrl',
+                 'title': 'Learn more',
+                 'url': 'http://adaptivecards.io'
+             },
+             {
+                 'type': 'Action.OpenUrl',
+                 'title': 'GitHub',
+                 'url': 'http://github.com/Microsoft/AdaptiveCards'
+             }
+         ]
+       };
+
+      const card = CardFactory.adaptiveCard(adaptiveCardData);
+      const message = MessageFactory.attachment(card);
+      await stepContext.context.sendActivity(message);
+
+     }
+
+        // If first pass through, show welcome messaging
+      if(unblockBotDetails.unblockDirectDeposit === null) {
+        await stepContext.context.sendActivity(standardMsg);
+        await stepContext.context.sendActivity(listOfItems);
+        await stepContext.context.sendActivity(infoMsg);
+      }
+
       // Prompt the user to enter their bank information
       return await stepContext.prompt(TEXT_PROMPT, { prompt: promptMsg });
+
 
     } else {
       return await stepContext.next(false);
