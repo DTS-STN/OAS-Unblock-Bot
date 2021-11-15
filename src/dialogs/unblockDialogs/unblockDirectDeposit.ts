@@ -6,14 +6,10 @@ import {
 } from 'botbuilder-dialogs';
 
 import { MessageFactory, CardFactory } from 'botbuilder';
-
 import i18n from '../locales/i18nConfig';
 
-
 import { CallbackBotDialog, CALLBACK_BOT_DIALOG } from '../callbackBotDialog';
-
 import { CallbackBotDetails } from '../callbackBotDetails';
-
 const TEXT_PROMPT = 'TEXT_PROMPT';
 const CHOICE_PROMPT = 'CHOICE_PROMPT';
 export const CONFIRM_DIRECT_DEPOSIT_STEP = 'CONFIRM_DIRECT_DEPOSIT_STEP';
@@ -25,6 +21,7 @@ let INSTITUTE = false
 let TRANSIT = false;
 let ACCOUNT = false;
 
+// WIP: EXPERIMENTING WITH ADAPTIVE CARDS IN START STEP, REMOVE LATER
 const CARD_DEBUG = true;
 
 export class UnblockDirectDepositStep extends ComponentDialog {
@@ -116,34 +113,99 @@ export class UnblockDirectDepositStep extends ComponentDialog {
         'type': 'AdaptiveCard',
          'version': '1.0',
          'body': [
-             {
-                 'type': 'Image',
-                 'url': 'http://adaptivecards.io/content/adaptive-card-50.png'
-             },
-             {
-                 'type': 'TextBlock',
-                 'text': 'Hello **Adaptive Cards!**'
-             }
-         ],
-         'actions': [
-             {
-                 'type': 'Action.OpenUrl',
-                 'title': 'Learn more',
-                 'url': 'http://adaptivecards.io'
-             },
-             {
-                 'type': 'Action.OpenUrl',
-                 'title': 'GitHub',
-                 'url': 'http://github.com/Microsoft/AdaptiveCards'
-             }
-         ]
-       };
+          {
+            'type': 'TextBlock',
+            'text': `${standardMsg}`,
+            'wrap': true
+          },
+          {"type": "FactSet",
+            "facts": [
+              {
+                "title": "1",
+                "value": "Institution Number"
+              },
+              {
+                "title": "2",
+                "value": "Transit Number"
+              },
+              {
+                "title": "3",
+                "value": "Account Number"
+              }
+            ]
+          },
+          {
+            'type': 'TextBlock',
+            'text': `${infoMsg}`,
+            'wrap': true
+          },
+          {
+            "type": "Input.Text",
+            "label": "Institution number",
+            "maxLength": 3,
+            "placeholder" : "Enter your 3 digit institution number",
+            "id": "instituteNumber",
+            "errorMessage": "We need a valid institution number",
+            "regex" : "^[0-9]{3}$",
+            "isRequired": true
+          },
+          {
+            "label": "Transit Number",
+            "type": "Input.Text",
+            "maxLength": 5,
+            "id": "transitNumber",
+            "placeholder" : "Enter your 5 digit transit number",
+            "errorMessage": "We need a valid transit number",
+            "regex" : "^[0-9]{5}$",
+            "isRequired": true
+          },
+          {
+            "type": "Input.Text",
+            "label": "Account number",
+            "maxLength": 7,
+            "id": "accountNumber",
+            "placeholder" : "Enter your 7 digit account number",
+            "errorMessage": "We need a valid account number",
+            "regex" : "^[0-9]{7}$",
+            "isRequired": true
+          },
+
+        ],
+        'actions': [
+          {
+            "type": "Action.Submit",
+            "title": "Submit my bank information",
+            "data": {
+              "id": "1234567890"
+            }
+          },
+          {
+            "type": "Action.ShowCard",
+            "title": "Where do I find these numbers?",
+            "tooltip" : "Click here to see where the numbers are",
+            "card": {
+              "type": "AdaptiveCard",
+              "body": [
+                {
+                  "type": "TextBlock",
+                  "text": "Here is the location of the numbers we were telling you about"
+                },
+                {
+                  "type": "Image",
+                  "url": "https://adaptivecards.io/content/cats/1.png"
+                }
+              ]
+            }
+          }
+        ]
+      };
 
       const card = CardFactory.adaptiveCard(adaptiveCardData);
       const message = MessageFactory.attachment(card);
+
       await stepContext.context.sendActivity(message);
 
-     }
+     } else {
 
         // If first pass through, show welcome messaging
       if(unblockBotDetails.unblockDirectDeposit === null) {
@@ -151,6 +213,8 @@ export class UnblockDirectDepositStep extends ComponentDialog {
         await stepContext.context.sendActivity(listOfItems);
         await stepContext.context.sendActivity(infoMsg);
       }
+
+    }
 
       // Prompt the user to enter their bank information
       return await stepContext.prompt(TEXT_PROMPT, { prompt: promptMsg });
