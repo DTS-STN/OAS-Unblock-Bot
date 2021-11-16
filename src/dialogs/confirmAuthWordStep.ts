@@ -131,9 +131,9 @@ export class ConfirmAuthWordStep extends ComponentDialog {
     // LUIZ Recogniser processing
     const recognizer = new LuisRecognizer(
       {
-        applicationId: applicationId,
-        endpointKey: endpointKey,
-        endpoint: endpoint
+        'applicationId': `${applicationId}`,
+        'endpointKey': `${endpointKey}`,
+        'endpoint': `${endpoint}`
       },
       {
         includeAllIntents: true,

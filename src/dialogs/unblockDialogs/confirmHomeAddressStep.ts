@@ -44,9 +44,9 @@ const LUISAppSetup = (stepContext) => {
   // LUIZ Recogniser processing
   recognizer = new LuisRecognizer(
     {
-      applicationId: applicationId,
-      endpointKey: endpointKey,
-      endpoint: endpoint
+      'applicationId': `${applicationId}`,
+      'endpointKey': `${endpointKey}`,
+      'endpoint': `${endpoint}`
     },
     {
       includeAllIntents: true,
