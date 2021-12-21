@@ -21,15 +21,12 @@ This bot has been created using [Bot Framework](https://dev.botframework.com). T
   - [Summary](#summary)
   - [Build Status](#build-status)
   - [Table of Contents](#table-of-contents)
-  - [Getting Started](#technology-stack)
   - [Installation](#installation)
-  - [Onboarding](#onboarding)
+  - [Onboarding](#developer-onboarding)
   - [Pipeline Integration](#pipeline-integration)
   - [Config Changelog](#config-changelog)
 
-## Getting Started
-
-### Installation
+## Installation
 
 - Clone this bot's code repository to your local machine
 
@@ -43,7 +40,7 @@ or
 git clone git@github.com:DTS-STN/oas-unblock-bot.git
 ```
 
-### Onboarding
+## Developer Onboarding
 
 See the Virtual Assistant Bot Framework [Onboarding wiki](https://github.com/DTS-STN/Virtual-Assistant-Bot-Framework/wiki/5.-Developer-Onboarding) for details on:
 
